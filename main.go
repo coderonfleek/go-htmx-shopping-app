@@ -6,9 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"shopping-app/pkg/handlers"
-	"shopping-app/pkg/repository"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -57,21 +54,6 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir("./uploads"))
 	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer))
-
-	repo := repository.NewRepository(db)
-	handler := handlers.NewHandler(repo)
-
-	// Product routes
-	r.HandleFunc("/products", handler.ListProducts).Methods("GET")
-	r.HandleFunc("/products", handler.CreateProduct).Methods("POST")
-	r.HandleFunc("/products/{id}", handler.GetProduct).Methods("GET")
-	r.HandleFunc("/products/{id}", handler.UpdateProduct).Methods("PUT")
-	r.HandleFunc("/products/{id}", handler.DeleteProduct).Methods("DELETE")
-
-	// Order routes
-	r.HandleFunc("/orders", handler.CreateOrder).Methods("POST")
-	r.HandleFunc("/orders/{id}", handler.GetOrder).Methods("GET")
-	r.HandleFunc("/orders/{id}/items", handler.AddOrderItem).Methods("POST")
 
 	http.ListenAndServe(":5000", r)
 }
