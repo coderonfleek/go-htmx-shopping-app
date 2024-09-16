@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -14,13 +13,17 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var tmpl *template.Template
+// var tmpl *template.Template
 var db *sql.DB
 
-var Store = sessions.NewCookieStore([]byte("usermanagementsecret"))
+var Store = sessions.NewCookieStore([]byte("shoppingcart"))
 
 func init() {
-	tmpl, _ = template.ParseGlob("templates/*.html")
+	//tmpl, _ = template.ParseGlob("templates/*.html")
+
+	/* templatesDir := "./templates"
+	pattern := filepath.Join(templatesDir, "**", "*.html")
+	tmpl = template.Must(template.ParseGlob(pattern)) */
 
 	//Set up Sessions
 	Store.Options = &sessions.Options{
@@ -54,9 +57,12 @@ func main() {
 	defer db.Close()
 
 	// Setup Static file handling for images
+	// Serve static files
+	fs := http.FileServer(http.Dir("./static"))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
-	fileServer := http.FileServer(http.Dir("./uploads"))
-	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer))
+	/* fileServer := http.FileServer(http.Dir("./uploads"))
+	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer)) */
 
 	repo := repository.NewRepository(db)
 	handler := handlers.NewHandler(repo)

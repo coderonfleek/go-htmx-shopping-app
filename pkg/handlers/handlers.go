@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"text/template"
 
 	"shopping-app/pkg/models"
 	"shopping-app/pkg/repository"
@@ -12,6 +14,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
+
+var tmpl *template.Template
+
+func init() {
+	templatesDir := "./templates"
+	pattern := filepath.Join(templatesDir, "**", "*.html")
+	tmpl = template.Must(template.ParseGlob(pattern))
+}
 
 type Handler struct {
 	Repo *repository.Repository
@@ -148,8 +158,10 @@ func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(products)
+	tmpl.ExecuteTemplate(w, "products", products)
+
+	/* w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(products) */
 }
 
 // Order Handlers

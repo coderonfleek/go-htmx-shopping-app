@@ -1,0 +1,58 @@
+{{define "products"}}
+
+{{template "adminHeader"}}
+
+{{template "adminSidemenu"}}
+
+
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">All Products</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                <li class="breadcrumb-item active">Tables</li>
+            </ol>
+            <div class="card mb-4">
+                <div class="card-body">
+                    This is where you can manage all products in your inventory. You can view, update and navigate between products. You can also use the button below to add a new product.
+                    <br>
+                    <button type="button" class="btn btn-success">Add Product</button>
+
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Manage Products
+                </div>
+                <div class="card-body">
+                                    
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {{range $index, $product := .}}
+                            <tr>
+                                <td scop="row">{{$index}}</td>
+                                <td>{{$product.ProductName}}</td>
+                                <td>{{$product.Description}}</td>
+                                <td>${{printf "%.2f" $product.Price}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+
+{{template "adminFooter"}}
+
+{{end}}
