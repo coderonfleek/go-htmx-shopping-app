@@ -110,3 +110,12 @@ func (r *ProductRepository) ListProducts(limit, offset int) ([]models.Product, e
 	}
 	return products, nil
 }
+
+func (r *ProductRepository) GetTotalProductsCount() (int, error) {
+	var count int
+	err := r.DB.QueryRow("SELECT COUNT(*) FROM products").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

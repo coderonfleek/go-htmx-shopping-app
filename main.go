@@ -68,11 +68,13 @@ func main() {
 	handler := handlers.NewHandler(repo)
 
 	// Product routes
+	r.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
 	r.HandleFunc("/products", handler.ListProducts).Methods("GET")
 	r.HandleFunc("/products", handler.CreateProduct).Methods("POST")
 	r.HandleFunc("/products/{id}", handler.GetProduct).Methods("GET")
 	r.HandleFunc("/products/{id}", handler.UpdateProduct).Methods("PUT")
 	r.HandleFunc("/products/{id}", handler.DeleteProduct).Methods("DELETE")
+	r.HandleFunc("/seed-products", handler.SeedProducts).Methods("POST")
 
 	// Order routes
 	r.HandleFunc("/orders", handler.CreateOrder).Methods("POST")

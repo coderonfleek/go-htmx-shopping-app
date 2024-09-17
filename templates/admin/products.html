@@ -36,15 +36,11 @@
                             <th scope="col">Price</th>
                           </tr>
                         </thead>
-                        <tbody>
-                            {{range $index, $product := .}}
-                            <tr>
-                                <td scop="row">{{$index}}</td>
-                                <td>{{$product.ProductName}}</td>
-                                <td>{{$product.Description}}</td>
-                                <td>${{printf "%.2f" $product.Price}}</td>
-                            </tr>
-                            {{end}}
+                        <tbody hx-get="/products" hx-trigger="load" hx-indicator="#products-indicator">
+                            <p align="center" id="products-indicator" class="htmx-indicator">
+                                [Loading Products....]
+                            </p>
+                            
                         </tbody>
                     </table>
                 </div>

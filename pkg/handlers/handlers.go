@@ -3,14 +3,19 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"math"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"text/template"
+	"strings"
+	"time"
 
 	"shopping-app/pkg/models"
 	"shopping-app/pkg/repository"
 
+	"github.com/bxcodec/faker/v3"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -138,7 +143,12 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ProductsPage(w http.ResponseWriter, r *http.Request) {
+
+	tmpl.ExecuteTemplate(w, "products", nil)
+}
+
+/* func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
 	offsetStr := r.URL.Query().Get("offset")
 
@@ -158,10 +168,114 @@ func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "products", products)
+	tmpl.ExecuteTemplate(w, "productRows", products)
 
-	/* w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(products) */
+} */
+
+func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 10 // Default limit
+	}
+
+	offset := (page - 1) * limit
+
+	products, err := h.Repo.Product.ListProducts(limit, offset)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalProducts, err := h.Repo.Product.GetTotalProductsCount()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalProducts) / float64(limit)))
+
+	data := struct {
+		Products    []models.Product
+		CurrentPage int
+		TotalPages  int
+		Limit       int
+	}{
+		Products:    products,
+		CurrentPage: page,
+		TotalPages:  totalPages,
+		Limit:       limit,
+	}
+
+	//tmpl.ExecuteTemplate(w, "productRows", data)
+	funcMap := template.FuncMap{
+		"subtract": func(a, b int) int {
+			return a - b
+		},
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"makeRange": func(min, max int) []int {
+			rangeArray := make([]int, max-min+1)
+			for i := range rangeArray {
+				rangeArray[i] = min + i
+			}
+			return rangeArray
+		},
+	}
+
+	productsTemplate := template.Must(template.New("product-rows.html").Funcs(funcMap).ParseFiles("templates/admin/product-rows.html"))
+	/* if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	} */
+
+	err = productsTemplate.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+}
+
+func (h *Handler) SeedProducts(w http.ResponseWriter, r *http.Request) {
+	// Seed the random number generator
+	rand.Seed(time.Now().UnixNano())
+
+	// Number of products to generate
+	numProducts := 20
+
+	//An array of realistic product names to pick from
+	productTypes := []string{"Laptop", "Smartphone", "Tablet", "Headphones", "Speaker", "Camera", "TV", "Watch", "Printer", "Monitor"}
+
+	for i := 0; i < numProducts; i++ {
+		//Generate the random but more realistic product type
+		productType := productTypes[rand.Intn(len(productTypes))]
+		productName := strings.Title(faker.Word()) + " " + productType
+
+		product := models.Product{
+			ProductName:  productName,
+			Price:        float64(rand.Intn(100000)) / 100, // Random price between 0.00 and 999.99
+			Description:  faker.Sentence(),
+			ProductImage: faker.Word() + ".jpg",
+		}
+
+		err := h.Repo.Product.CreateProduct(&product)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error creating product %s: %v", product.ProductName, err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintf(w, "Successfully seeded %d dummy products", numProducts)
 }
 
 // Order Handlers

@@ -1,0 +1,34 @@
+
+
+
+    {{range $index, $product := .Products}}
+        <tr>
+            <td scope="row">{{$index}}</td>
+            <td>{{$product.ProductName}}</td>
+            <td>{{$product.Description}}</td>
+            <td>${{printf "%.2f" $product.Price}}</td>
+        </tr>
+    {{end}}
+
+    <div class="pagination">
+        {{if gt .CurrentPage 1}}
+            <li><a href="?page=1&limit={{.Limit}}">First</a></li>
+            <li><a href="?page={{subtract .CurrentPage 1}}&limit={{.Limit}}">Previous</a></li>
+        {{end}}
+
+        {{range $i := makeRange 1 .TotalPages}}
+            <li>
+                <a href="?page={{$i}}&limit={{$.Limit}}" {{if eq $i $.CurrentPage}}class="active"{{end}}>
+                    {{$i}}
+                </a>
+            </li>
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+            <li><a href="?page={{add .CurrentPage 1}}&limit={{.Limit}}">Next</a></li>
+            <li><a href="?page={{.TotalPages}}&limit={{.Limit}}">Last</a></li>
+        {{end}}
+    </div>
+
+    
+
