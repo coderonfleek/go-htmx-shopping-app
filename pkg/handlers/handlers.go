@@ -36,6 +36,23 @@ func NewHandler(repo *repository.Repository) *Handler {
 	return &Handler{Repo: repo}
 }
 
+// Utility Functions
+/* func subtract(a, b int) int {
+	return a - b
+}
+
+func add(a, b int) int {
+	return a + b
+} */
+
+func makeRange(min, max int) []int {
+	rangeArray := make([]int, max-min+1)
+	for i := range rangeArray {
+		rangeArray[i] = min + i
+	}
+	return rangeArray
+}
+
 // Product Handlers
 
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
@@ -201,47 +218,48 @@ func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	totalPages := int(math.Ceil(float64(totalProducts) / float64(limit)))
+	previousPage := page - 1
+	nextPage := page + 1
+	pageButtonsRange := makeRange(1, totalPages)
 
 	data := struct {
-		Products    []models.Product
-		CurrentPage int
-		TotalPages  int
-		Limit       int
+		Products         []models.Product
+		CurrentPage      int
+		TotalPages       int
+		Limit            int
+		PreviousPage     int
+		NextPage         int
+		PageButtonsRange []int
 	}{
-		Products:    products,
-		CurrentPage: page,
-		TotalPages:  totalPages,
-		Limit:       limit,
+		Products:         products,
+		CurrentPage:      page,
+		TotalPages:       totalPages,
+		Limit:            limit,
+		PreviousPage:     previousPage,
+		NextPage:         nextPage,
+		PageButtonsRange: pageButtonsRange,
 	}
 
-	//tmpl.ExecuteTemplate(w, "productRows", data)
-	funcMap := template.FuncMap{
-		"subtract": func(a, b int) int {
-			return a - b
-		},
-		"add": func(a, b int) int {
-			return a + b
-		},
-		"makeRange": func(min, max int) []int {
-			rangeArray := make([]int, max-min+1)
-			for i := range rangeArray {
-				rangeArray[i] = min + i
-			}
-			return rangeArray
-		},
-	}
+	/*
+		funcMap := template.FuncMap{
+			"subtract":  subtract,
+			"add":       add,
+			"makeRange": makeRange,
+		}
 
-	productsTemplate := template.Must(template.New("product-rows.html").Funcs(funcMap).ParseFiles("templates/admin/product-rows.html"))
-	/* if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	} */
+		productsTemplate := template.Must(template.New("productRows.html").Funcs(funcMap).ParseFiles("templates/admin/productRows.html"))
 
-	err = productsTemplate.Execute(w, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+		err = productsTemplate.Execute(w, data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	*/
+
+	//Fake Latency
+	//time.Sleep(5 * time.Second)
+
+	tmpl.ExecuteTemplate(w, "productRows", data)
 
 }
 

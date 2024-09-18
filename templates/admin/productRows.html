@@ -1,0 +1,47 @@
+
+{{define "productRows"}}
+
+    {{range $index, $product := .Products}}
+        <tr>
+            <!-- <td>{{$index}}</td> -->
+            <td style="width: 300px;">{{$product.ProductName}}</td>
+            <td>{{$product.Description}}</td>
+            <td>${{printf "%.2f" $product.Price}}</td>
+            <td style="width: 200px;">
+                <button class="btn btn-primary">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="btn btn-success">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-danger">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    {{end}}
+
+    <div class="pagination">
+        {{if gt .CurrentPage 1}}
+            <li><a hx-target="#tableBody" hx-get="/products?page=1&limit={{.Limit}}">First</a></li>
+            <li><a hx-target="#tableBody" hx-get="/products?page={{.PreviousPage}}&limit={{.Limit}}">Previous</a></li>
+        {{end}}
+
+        {{range $i := .PageButtonsRange}}
+            <li>
+                <a hx-target="#tableBody" hx-get="/products?page={{$i}}&limit={{$.Limit}}" {{if eq $i $.CurrentPage}}class="active"{{end}}>
+                    {{$i}}
+                </a>
+            </li>
+        {{end}}
+
+        {{if lt .CurrentPage .TotalPages}}
+            <li><a hx-target="#tableBody" hx-get="/products?page={{.NextPage}}&limit={{.Limit}}">Next</a></li>
+            <li><a hx-target="#tableBody" hx-get="/products?page={{.TotalPages}}&limit={{.Limit}}">Last</a></li>
+        {{end}}
+    </div>
+
+{{end}}
+
+    
+

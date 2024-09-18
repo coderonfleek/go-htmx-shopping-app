@@ -30,14 +30,15 @@
                     <table class="table">
                         <thead>
                           <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Price</th>
+                            <!-- <th>#</th> -->
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
-                        <tbody hx-get="/products" hx-trigger="load" hx-indicator="#products-indicator">
-                            <p align="center" id="products-indicator" class="htmx-indicator">
+                        <tbody id="tableBody" hx-get="/products" hx-trigger="load" hx-indicator="#loading-indicator">
+                            <p align="center" id="loading-indicator" class="htmx-indicator">
                                 [Loading Products....]
                             </p>
                             
