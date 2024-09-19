@@ -7,7 +7,7 @@
 
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">All Products</h1>
+            <h1 class="mt-4">Manage Products</h1>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
                 <li class="breadcrumb-item active">Tables</li>
@@ -16,21 +16,25 @@
                 <div class="card-body">
                     This is where you can manage all products in your inventory. You can view, update and navigate between products. You can also use the button below to add a new product.
                     <br>
-                    <button type="button" class="btn btn-success">Add Product</button>
+                    <div id="pageActionButton">
+                        <button hx-get="/createproduct" hx-target="#productPagesContainer" type="button" class="btn btn-success">Add Product</button>
+                    </div>
+                    
 
                 </div>
             </div>
-            <div class="card mb-4">
-                <div class="card-header">
+            <div class="card mb-4" id="productPagesContainer">
+                {{template "allProducts"}}
+                <!-- <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    Manage Products
+                    All Products
                 </div>
                 <div class="card-body">
                                     
                     <table class="table">
                         <thead>
                           <tr>
-                            <!-- <th>#</th> -->
+                            
                             <th>Name</th>
                             <th>Description</th>
                             <th>Price</th>
@@ -44,7 +48,7 @@
                             
                         </tbody>
                     </table>
-                </div>
+                </div> -->
             </div>
         </div>
     </main>

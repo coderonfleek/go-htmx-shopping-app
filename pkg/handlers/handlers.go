@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"math"
 	"math/rand"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -80,6 +82,59 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Initialize error messages slice
+	var responseMessages []string
+
+	/* Process File Upload */
+
+	// Parse the multipart form, 10 MB max upload size
+	r.ParseMultipartForm(10 << 20)
+
+	// Retrieve the file from form data
+	file, handler, err := r.FormFile("product_image")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			responseMessages = append(responseMessages, "No file submitted")
+		} else {
+			responseMessages = append(responseMessages, "Error retrieving the file")
+		}
+
+		if len(responseMessages) > 0 {
+			tmpl.ExecuteTemplate(w, "messages", responseMessages)
+			return
+		}
+
+	}
+	defer file.Close()
+
+	// Generate a unique filename to prevent overwriting and conflicts
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		responseMessages = append(responseMessages, "Error generating unique identifier")
+		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+
+		return
+	}
+	filename := uuid.String() + filepath.Ext(handler.Filename) // Append the file extension
+
+	// Create the full path for saving the file
+	filePath := filepath.Join("static/uploads", filename)
+
+	// Save the file to the server
+	dst, err := os.Create(filePath)
+	if err != nil {
+		responseMessages = append(responseMessages, "Error saving the file")
+		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+
+		return
+	}
+	defer dst.Close()
+	if _, err = io.Copy(dst, file); err != nil {
+		responseMessages = append(responseMessages, "Error saving the file")
+		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+		return
+	}
+
 	price, err := strconv.ParseFloat(r.FormValue("price"), 64)
 	if err != nil {
 		http.Error(w, "Invalid price", http.StatusBadRequest)
@@ -90,7 +145,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		ProductName:  r.FormValue("product_name"),
 		Price:        price,
 		Description:  r.FormValue("description"),
-		ProductImage: r.FormValue("product_image"),
+		ProductImage: filename,
 	}
 
 	err = h.Repo.Product.CreateProduct(&product)
@@ -100,9 +155,8 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(product)
+	responseMessages = append(responseMessages, "Product Successfully Created")
+	tmpl.ExecuteTemplate(w, "messages", responseMessages)
 }
 
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
@@ -163,6 +217,16 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ProductsPage(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.ExecuteTemplate(w, "products", nil)
+}
+
+func (h *Handler) AllProductsView(w http.ResponseWriter, r *http.Request) {
+
+	tmpl.ExecuteTemplate(w, "allProducts", nil)
+}
+
+func (h *Handler) CreateProductView(w http.ResponseWriter, r *http.Request) {
+
+	tmpl.ExecuteTemplate(w, "createProduct", nil)
 }
 
 /* func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {

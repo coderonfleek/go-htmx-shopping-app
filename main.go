@@ -68,7 +68,12 @@ func main() {
 	handler := handlers.NewHandler(repo)
 
 	// Product routes
+	//Views and Pages
 	r.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
+	r.HandleFunc("/createproduct", handler.CreateProductView).Methods("GET")
+	r.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
+
+	//Actions
 	r.HandleFunc("/products", handler.ListProducts).Methods("GET")
 	r.HandleFunc("/products", handler.CreateProduct).Methods("POST")
 	r.HandleFunc("/products/{id}", handler.GetProduct).Methods("GET")

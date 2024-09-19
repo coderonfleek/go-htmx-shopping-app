@@ -1,0 +1,34 @@
+{{define "allProducts"}}
+<div class="card-header">
+    <i class="fas fa-table me-1"></i>
+    All Products
+</div>
+<div class="card-body">
+                    
+    <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" hx-get="/products" hx-trigger="load" hx-indicator="#loading-indicator">
+            <p align="center" id="loading-indicator" class="htmx-indicator">
+                [Loading Products....]
+            </p>
+            
+        </tbody>
+    </table>
+</div>
+
+<!-- Out of Bound swap for Action button -->
+<div style="display: none;"> <!-- Hack to stop it from displaying when the view is loaded naturally -->
+    <div id="pageActionButton" hx-swap-oob="true">
+        <button hx-get="/createproduct" hx-target="#productPagesContainer" type="button" class="btn btn-success">Add Product</button>
+    </div>
+</div>
+
+
+{{end}}
