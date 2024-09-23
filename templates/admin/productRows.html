@@ -8,7 +8,7 @@
             <td>{{$product.Description}}</td>
             <td>${{printf "%.2f" $product.Price}}</td>
             <td style="width: 200px;">
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" hx-get="/products/{{$product.ProductID}}" hx-target="#productPagesContainer">
                     <i class="fa-solid fa-eye"></i>
                 </button>
                 <button class="btn btn-success">

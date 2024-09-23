@@ -82,8 +82,7 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	tmpl.ExecuteTemplate(w, "viewProduct", product)
 }
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
