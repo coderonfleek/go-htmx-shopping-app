@@ -19,16 +19,14 @@
         </div>
         <div class="mb-3">
             <label for="bio" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" placeholder="Product Description">
-                
-            </textarea>
+            <textarea class="form-control" id="description" name="description" placeholder="Product Description"></textarea>
         </div>
         <div class="mb-3">
             <label for="avatarInput" class="form-label">Select Product Image</label>
             <input type="file" class="form-control" id="product_image" name="product_image" required>
         </div>
         
-        <button hx-post="/edit" hx-target="#errors" type="submit" class="btn btn-primary">Save Changes</button>
+        <button hx-post="/products" hx-encoding="multipart/form-data" hx-target="#errors" type="submit" class="btn btn-primary">Create Product</button>
     </form>
 
 </div>

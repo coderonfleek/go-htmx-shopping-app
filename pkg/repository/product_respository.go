@@ -83,7 +83,7 @@ func (r *ProductRepository) DeleteProduct(productID uuid.UUID) error {
 
 func (r *ProductRepository) ListProducts(limit, offset int) ([]models.Product, error) {
 	query := `SELECT product_id, product_name, price, description, product_image, date_created, date_modified 
-              FROM products LIMIT ? OFFSET ?`
+              FROM products ORDER BY date_created DESC LIMIT ? OFFSET ?`
 
 	rows, err := r.DB.Query(query, limit, offset)
 	if err != nil {

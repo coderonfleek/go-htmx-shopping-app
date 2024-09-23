@@ -55,6 +55,17 @@ func makeRange(min, max int) []int {
 	return rangeArray
 }
 
+// Structs
+type ProductCRUDTemplateData struct {
+	Messages []string
+	Product  *models.Product
+}
+
+func sendProductMessage(w http.ResponseWriter, messages []string, product *models.Product) {
+	data := ProductCRUDTemplateData{Messages: messages, Product: product}
+	tmpl.ExecuteTemplate(w, "messages", data)
+}
+
 // Product Handlers
 
 func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
@@ -76,31 +87,39 @@ func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+
+	// Parse the multipart form, 10 MB max upload size
+	r.ParseMultipartForm(10 << 20)
 
 	// Initialize error messages slice
 	var responseMessages []string
 
-	/* Process File Upload */
+	//Check for empty fields
+	ProductName := r.FormValue("product_name")
+	ProductPrice := r.FormValue("price")
+	ProductDescription := r.FormValue("description")
 
-	// Parse the multipart form, 10 MB max upload size
-	r.ParseMultipartForm(10 << 20)
+	if ProductName == "" || ProductPrice == "" || ProductDescription == "" {
+		responseMessages = append(responseMessages, "All Fields Are Required")
+
+		sendProductMessage(w, responseMessages, nil)
+		return
+	}
+
+	/* Process File Upload */
 
 	// Retrieve the file from form data
 	file, handler, err := r.FormFile("product_image")
 	if err != nil {
 		if err == http.ErrMissingFile {
-			responseMessages = append(responseMessages, "No file submitted")
+			responseMessages = append(responseMessages, "Select an Image for the Product")
 		} else {
 			responseMessages = append(responseMessages, "Error retrieving the file")
 		}
 
 		if len(responseMessages) > 0 {
-			tmpl.ExecuteTemplate(w, "messages", responseMessages)
+			fmt.Println(responseMessages)
+			sendProductMessage(w, responseMessages, nil)
 			return
 		}
 
@@ -111,7 +130,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	uuid, err := uuid.NewRandom()
 	if err != nil {
 		responseMessages = append(responseMessages, "Error generating unique identifier")
-		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+		sendProductMessage(w, responseMessages, nil)
 
 		return
 	}
@@ -124,39 +143,42 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	dst, err := os.Create(filePath)
 	if err != nil {
 		responseMessages = append(responseMessages, "Error saving the file")
-		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+		sendProductMessage(w, responseMessages, nil)
 
 		return
 	}
 	defer dst.Close()
 	if _, err = io.Copy(dst, file); err != nil {
 		responseMessages = append(responseMessages, "Error saving the file")
-		tmpl.ExecuteTemplate(w, "messages", responseMessages)
+		sendProductMessage(w, responseMessages, nil)
 		return
 	}
 
 	price, err := strconv.ParseFloat(r.FormValue("price"), 64)
 	if err != nil {
-		http.Error(w, "Invalid price", http.StatusBadRequest)
+
+		responseMessages = append(responseMessages, "Invalid price")
+		sendProductMessage(w, responseMessages, nil)
 		return
 	}
 
 	product := models.Product{
-		ProductName:  r.FormValue("product_name"),
+		ProductName:  ProductName,
 		Price:        price,
-		Description:  r.FormValue("description"),
+		Description:  ProductDescription,
 		ProductImage: filename,
 	}
 
 	err = h.Repo.Product.CreateProduct(&product)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		fmt.Println(err.Error())
+		//http.Error(w, err.Error(), http.StatusInternalServerError)
+		responseMessages = append(responseMessages, "Invalid price"+err.Error())
+		sendProductMessage(w, responseMessages, nil)
+
 		return
 	}
 
-	responseMessages = append(responseMessages, "Product Successfully Created")
-	tmpl.ExecuteTemplate(w, "messages", responseMessages)
+	sendProductMessage(w, []string{}, &product)
 }
 
 func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
