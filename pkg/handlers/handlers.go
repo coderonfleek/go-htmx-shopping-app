@@ -245,13 +245,19 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	product, _ := h.Repo.Product.GetProductByID(productID)
+
 	err = h.Repo.Product.DeleteProduct(productID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	//Remove product image
+	productImagePath := filepath.Join("static/uploads", product.ProductImage)
+	os.Remove(productImagePath)
+
+	tmpl.ExecuteTemplate(w, "allProducts", nil)
 }
 
 func (h *Handler) EditProductView(w http.ResponseWriter, r *http.Request) {
@@ -285,30 +291,6 @@ func (h *Handler) CreateProductView(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.ExecuteTemplate(w, "createProduct", nil)
 }
-
-/* func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
-	limitStr := r.URL.Query().Get("limit")
-	offsetStr := r.URL.Query().Get("offset")
-
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit <= 0 {
-		limit = 10 // Default limit
-	}
-
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil || offset < 0 {
-		offset = 0 // Default offset
-	}
-
-	products, err := h.Repo.Product.ListProducts(limit, offset)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	tmpl.ExecuteTemplate(w, "productRows", products)
-
-} */
 
 func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
 	pageStr := r.URL.Query().Get("page")

@@ -14,7 +14,7 @@
                 <button class="btn btn-success" hx-get="/editproduct/{{$product.ProductID}}" hx-target="#productPagesContainer">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="btn btn-danger">
+                <button class="btn btn-danger" hx-confirm="Are you sure you want to delete '{{$product.ProductName}}'?" hx-delete="/products/{{$product.ProductID}}" hx-target="#productPagesContainer">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
