@@ -26,7 +26,9 @@
             <input type="file" class="form-control" id="product_image" name="product_image" required>
         </div> -->
         
-        <button hx-put="/products/{{.ProductID}}" hx-target="#errors" type="submit" class="btn btn-primary">Save Changes</button>
+        <button hx-put="/products/{{.ProductID}}" 
+                hx-target="#errors" 
+                hx-indicator="#loadingIndicator" type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 
 </div>

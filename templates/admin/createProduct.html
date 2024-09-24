@@ -26,7 +26,10 @@
             <input type="file" class="form-control" id="product_image" name="product_image" required>
         </div>
         
-        <button hx-post="/products" hx-encoding="multipart/form-data" hx-target="#errors" type="submit" class="btn btn-primary">Create Product</button>
+        <button hx-post="/products" 
+                hx-encoding="multipart/form-data" 
+                hx-target="#errors" 
+                hx-indicator="#loadingIndicator" type="submit" class="btn btn-primary">Create Product</button>
     </form>
 
 </div>

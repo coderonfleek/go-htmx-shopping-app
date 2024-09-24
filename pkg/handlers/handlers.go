@@ -177,6 +177,9 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Fake Latency
+	time.Sleep(2 * time.Second)
+
 	sendProductMessage(w, []string{}, &product)
 }
 
@@ -234,6 +237,9 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	//Get and send updated product
 	updatedProduct, _ := h.Repo.Product.GetProductByID(productID)
 
+	//Fake Latency
+	time.Sleep(2 * time.Second)
+
 	sendProductMessage(w, []string{}, updatedProduct)
 }
 
@@ -256,6 +262,9 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	//Remove product image
 	productImagePath := filepath.Join("static/uploads", product.ProductImage)
 	os.Remove(productImagePath)
+
+	//Fake Latency
+	time.Sleep(2 * time.Second)
 
 	tmpl.ExecuteTemplate(w, "allProducts", nil)
 }

@@ -17,4 +17,38 @@
     color: white;
 }
 
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height:  
+150px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.loading-text {
+    color: white;
+    font-size: 24px;
+    animation: loading-animation 1s infinite;
+}
+
+@keyframes loading-animation {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 
