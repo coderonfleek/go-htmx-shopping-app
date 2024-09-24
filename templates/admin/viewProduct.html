@@ -16,7 +16,7 @@
                 <h2 class="mb-3">${{printf "%.2f" .Price}}</h2>
                 <!-- <button class="btn btn-primary btn-lg">Add to Cart</button> -->
                 {{if .ProductID}}
-                <a href="/edit/{{.ProductID}}" class="btn btn-outline-secondary btn-lg ms-2">Edit</a>
+                <a hx-get="/editproduct/{{.ProductID}}" hx-target="#productPagesContainer" class="btn btn-outline-secondary btn-lg ms-2">Edit</a>
                 {{end}} 
             </div>
         </div>

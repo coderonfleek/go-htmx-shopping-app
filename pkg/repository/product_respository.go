@@ -59,7 +59,7 @@ func (r *ProductRepository) CreateProduct(product *models.Product) error {
 }
 
 func (r *ProductRepository) UpdateProduct(product *models.Product) error {
-	query := `UPDATE products SET product_name = ?, price = ?, description = ?, product_image = ?, date_modified = ? 
+	query := `UPDATE products SET product_name = ?, price = ?, description = ?, date_modified = ? 
               WHERE product_id = ?`
 
 	product.DateModified = time.Now()
@@ -68,7 +68,6 @@ func (r *ProductRepository) UpdateProduct(product *models.Product) error {
 		product.ProductName,
 		product.Price,
 		product.Description,
-		product.ProductImage,
 		product.DateModified,
 		product.ProductID,
 	)

@@ -11,7 +11,7 @@
                 <button class="btn btn-primary" hx-get="/products/{{$product.ProductID}}" hx-target="#productPagesContainer">
                     <i class="fa-solid fa-eye"></i>
                 </button>
-                <button class="btn btn-success">
+                <button class="btn btn-success" hx-get="/editproduct/{{$product.ProductID}}" hx-target="#productPagesContainer">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
                 <button class="btn btn-danger">

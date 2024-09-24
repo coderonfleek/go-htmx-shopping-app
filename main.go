@@ -72,6 +72,7 @@ func main() {
 	r.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
 	r.HandleFunc("/createproduct", handler.CreateProductView).Methods("GET")
 	r.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
+	r.HandleFunc("/editproduct/{id}", handler.EditProductView).Methods("GET")
 
 	//Actions
 	r.HandleFunc("/products", handler.ListProducts).Methods("GET")

@@ -194,28 +194,47 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	price, err := strconv.ParseFloat(r.FormValue("price"), 64)
+	// Initialize error messages slice
+	var responseMessages []string
+
+	//Check for empty fields
+	ProductName := r.FormValue("product_name")
+	ProductPrice := r.FormValue("price")
+	ProductDescription := r.FormValue("description")
+
+	if ProductName == "" || ProductPrice == "" || ProductDescription == "" {
+
+		responseMessages = append(responseMessages, "All Fields Are Required")
+		sendProductMessage(w, responseMessages, nil)
+		return
+	}
+
+	price, err := strconv.ParseFloat(ProductPrice, 64)
 	if err != nil {
-		http.Error(w, "Invalid price", http.StatusBadRequest)
+		responseMessages = append(responseMessages, "Invalid Price")
+		sendProductMessage(w, responseMessages, nil)
 		return
 	}
 
 	product := models.Product{
-		ProductID:    productID,
-		ProductName:  r.FormValue("product_name"),
-		Price:        price,
-		Description:  r.FormValue("description"),
-		ProductImage: r.FormValue("product_image"),
+		ProductID:   productID,
+		ProductName: ProductName,
+		Price:       price,
+		Description: ProductDescription,
 	}
 
 	err = h.Repo.Product.UpdateProduct(&product)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		responseMessages = append(responseMessages, "Error Updating Product: "+err.Error())
+		sendProductMessage(w, responseMessages, nil)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	//Get and send updated product
+	updatedProduct, _ := h.Repo.Product.GetProductByID(productID)
+
+	sendProductMessage(w, []string{}, updatedProduct)
 }
 
 func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
@@ -233,6 +252,23 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) EditProductView(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	productID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	product, err := h.Repo.Product.GetProductByID(productID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.ExecuteTemplate(w, "editProduct", product)
 }
 
 func (h *Handler) ProductsPage(w http.ResponseWriter, r *http.Request) {
