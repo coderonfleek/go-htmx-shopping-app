@@ -408,6 +408,19 @@ func (h *Handler) SeedProducts(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Successfully seeded %d dummy products", numProducts)
 }
 
+// Shopping Page Handlers
+func (h *Handler) ShoppingHomepage(w http.ResponseWriter, r *http.Request) {
+
+	tmpl.ExecuteTemplate(w, "homepage", nil)
+}
+
+func (h *Handler) ShoppingItemsView(w http.ResponseWriter, r *http.Request) {
+
+	products, _ := h.Repo.Product.GetProducts("product_image !=''")
+
+	tmpl.ExecuteTemplate(w, "shoppingItems", products)
+}
+
 // Order Handlers
 
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {

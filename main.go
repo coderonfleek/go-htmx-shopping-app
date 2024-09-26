@@ -67,14 +67,18 @@ func main() {
 	repo := repository.NewRepository(db)
 	handler := handlers.NewHandler(repo)
 
+	//User Views and Pages
+	r.HandleFunc("/", handler.ShoppingHomepage).Methods("GET")
+	r.HandleFunc("/shoppingitems", handler.ShoppingItemsView).Methods("GET")
+
 	// Product routes
-	//Views and Pages
+	//Admin Views and Pages
 	r.HandleFunc("/manageproducts", handler.ProductsPage).Methods("GET")
 	r.HandleFunc("/createproduct", handler.CreateProductView).Methods("GET")
 	r.HandleFunc("/allproducts", handler.AllProductsView).Methods("GET")
 	r.HandleFunc("/editproduct/{id}", handler.EditProductView).Methods("GET")
 
-	//Actions
+	//Admin Actions
 	r.HandleFunc("/products", handler.ListProducts).Methods("GET")
 	r.HandleFunc("/products", handler.CreateProduct).Methods("POST")
 	r.HandleFunc("/products/{id}", handler.GetProduct).Methods("GET")

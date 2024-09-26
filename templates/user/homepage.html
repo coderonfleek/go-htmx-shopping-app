@@ -1,0 +1,42 @@
+{{define "homepage"}}
+
+{{template "header"}}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4" hx-get="/shoppingitems" hx-trigger="load">
+                <!-- Products list -->
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Your Cart</h5>
+                    <div class="cart-item">
+                        <span>An item</span>
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </div>
+                    <div class="cart-item">
+                        <span>A second item</span>
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </div>
+                    <div class="cart-item">
+                        <span>A third item</span>
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary w-100 mt-3">Go to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer"}}
+
+{{end}}

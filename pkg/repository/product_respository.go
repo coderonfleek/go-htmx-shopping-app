@@ -118,3 +118,38 @@ func (r *ProductRepository) GetTotalProductsCount() (int, error) {
 	}
 	return count, nil
 }
+
+func (r *ProductRepository) GetProducts(whereClause string) ([]models.Product, error) {
+	query := `
+		SELECT product_id, product_name, price, description, product_image, date_created, date_modified
+		FROM products
+	`
+
+	if whereClause != "" {
+		query += " WHERE " + whereClause
+	}
+
+	query += " ORDER BY date_created DESC"
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []models.Product
+	for rows.Next() {
+		var p models.Product
+		err := rows.Scan(&p.ProductID, &p.ProductName, &p.Price, &p.Description, &p.ProductImage, &p.DateCreated, &p.DateModified)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}

@@ -1,0 +1,24 @@
+{{define "shoppingItems"}}
+
+    {{range $index, $product := .}}
+
+        <div class="col">
+            <div class="card mb-2">
+                <img src="/static/uploads/{{$product.ProductImage}}" class="card-img-top" alt="{{$product.ProductName}}">
+                <div class="card-body">
+                    <h5 class="card-title">{{$product.ProductName}}</h5>
+                    <p class="card-text">${{$product.Price}}</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            {{$product.Description}}
+                        </small>
+                    </p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+    {{end}}
+
+
+{{end}}
