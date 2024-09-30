@@ -9,11 +9,11 @@
                     <h5 class="card-title">{{$product.ProductName}}</h5>
                     <p class="card-text">${{$product.Price}}</p>
                     <p class="card-text">
-                        <small class="text-muted">
+                        <small class="text-muted text-truncate" style="max-width: 200px; display: inline-block;">
                             {{$product.Description}}
                         </small>
                     </p>
-                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-primary" hx-post="/addtocart/{{$product.ProductID}}" hx-target="#shoppingCartItems">Add to Cart</button>
                 </div>
             </div>
         </div>

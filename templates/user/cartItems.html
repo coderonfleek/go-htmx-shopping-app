@@ -1,0 +1,35 @@
+{{define "cartItems"}}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Your Cart</h5>
+
+        {{if .Message}}
+          <div class="alert alert-{{.AlertType}}" role="alert">
+            {{.Message}}
+          </div>
+        {{end}}
+
+        {{if .OrderItems}}
+            {{range .OrderItems}}
+                <div class="cart-item">
+                    <span>{{.Product.ProductName}}</span>
+                    <span class="badge badge-primary badge-pill">{{.Quantity}}</span>
+                </div>
+            {{end}}
+        {{else}}
+            <p>Your Cart is Empty</p>
+        {{end}}
+        
+    </div>
+</div>
+
+{{if .OrderItems}}
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary w-100 mt-3">Go to Cart</button>
+        </div>
+    </div>
+{{end}}
+
+{{end}}

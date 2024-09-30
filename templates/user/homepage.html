@@ -5,34 +5,16 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-9">
-            <div class="row row-cols-1 row-cols-md-3 g-4" hx-get="/shoppingitems" hx-trigger="load">
+            <div class="progress htmx-indicator" id="shoppingItemsIndicator">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4" hx-get="/shoppingitems" hx-trigger="load" hx-indicator="#shoppingItemsIndicator">
+                  
                 <!-- Products list -->
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Your Cart</h5>
-                    <div class="cart-item">
-                        <span>An item</span>
-                        <span class="badge badge-primary badge-pill">1</span>
-                    </div>
-                    <div class="cart-item">
-                        <span>A second item</span>
-                        <span class="badge badge-primary badge-pill">1</span>
-                    </div>
-                    <div class="cart-item">
-                        <span>A third item</span>
-                        <span class="badge badge-primary badge-pill">1</span>
-                    </div>
-                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button class="btn btn-primary w-100 mt-3">Go to Cart</button>
-                </div>
-            </div>
+        <div id="shoppingCartItems" class="col-md-3 mt-3" hx-get="/cartitems" hx-trigger="load">
+            <!-- Cart Items -->
         </div>
     </div>
 </div>

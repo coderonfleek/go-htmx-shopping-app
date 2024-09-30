@@ -61,10 +61,15 @@ type ProductCRUDTemplateData struct {
 	Product  *models.Product
 }
 
+// Helper Functions
 func sendProductMessage(w http.ResponseWriter, messages []string, product *models.Product) {
 	data := ProductCRUDTemplateData{Messages: messages, Product: product}
 	tmpl.ExecuteTemplate(w, "messages", data)
 }
+
+// Shoping Cart Variables
+var currentCartOrderId uuid.UUID
+var cartItems []models.OrderItem
 
 // Product Handlers
 
@@ -416,9 +421,91 @@ func (h *Handler) ShoppingHomepage(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ShoppingItemsView(w http.ResponseWriter, r *http.Request) {
 
+	//Fake Latency
+	time.Sleep(2 * time.Second)
+
 	products, _ := h.Repo.Product.GetProducts("product_image !=''")
 
 	tmpl.ExecuteTemplate(w, "shoppingItems", products)
+}
+
+func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	productID, err := uuid.Parse(vars["product_id"])
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	// Generate a new order id for the session if one does not exist
+	if currentCartOrderId == uuid.Nil {
+		currentCartOrderId = uuid.New()
+	}
+
+	// Check if product already exists in order items
+	exists := false
+	for _, item := range cartItems {
+		if item.ProductID == productID {
+			exists = true
+			break
+		}
+	}
+
+	//Get the Product
+	product, _ := h.Repo.Product.GetProductByID(productID)
+
+	cartMessage := ""
+	alertType := ""
+
+	if !exists {
+
+		// Create a new order item
+		newOrderItem := models.OrderItem{
+			OrderID:   currentCartOrderId,
+			ProductID: productID,
+			Quantity:  1, // Initial quantity of 1
+			Product:   *product,
+		}
+
+		// Add new order item to the array
+		cartItems = append(cartItems, newOrderItem)
+
+		cartMessage = product.ProductName + " successfully added"
+		alertType = "success"
+	} else {
+
+		cartMessage = product.ProductName + " already exists in cart"
+		alertType = "danger"
+	}
+
+	data := struct {
+		OrderItems []models.OrderItem
+		Message    string
+		AlertType  string
+	}{
+		OrderItems: cartItems,
+		Message:    cartMessage,
+		AlertType:  alertType,
+	}
+
+	tmpl.ExecuteTemplate(w, "cartItems", data)
+
+}
+
+func (h *Handler) CartView(w http.ResponseWriter, r *http.Request) {
+
+	data := struct {
+		OrderItems []models.OrderItem
+		Message    string
+		AlertType  string
+	}{
+		OrderItems: cartItems,
+		Message:    "",
+		AlertType:  "",
+	}
+
+	tmpl.ExecuteTemplate(w, "cartItems", data)
 }
 
 // Order Handlers

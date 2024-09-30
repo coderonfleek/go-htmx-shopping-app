@@ -70,6 +70,8 @@ func main() {
 	//User Views and Pages
 	r.HandleFunc("/", handler.ShoppingHomepage).Methods("GET")
 	r.HandleFunc("/shoppingitems", handler.ShoppingItemsView).Methods("GET")
+	r.HandleFunc("/cartitems", handler.CartView).Methods("GET")
+	r.HandleFunc("/addtocart/{product_id}", handler.AddToCart).Methods("POST")
 
 	// Product routes
 	//Admin Views and Pages
