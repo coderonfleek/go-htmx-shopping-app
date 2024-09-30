@@ -416,7 +416,13 @@ func (h *Handler) SeedProducts(w http.ResponseWriter, r *http.Request) {
 // Shopping Page Handlers
 func (h *Handler) ShoppingHomepage(w http.ResponseWriter, r *http.Request) {
 
-	tmpl.ExecuteTemplate(w, "homepage", nil)
+	data := struct {
+		OrderItems []models.OrderItem
+	}{
+		OrderItems: cartItems,
+	}
+
+	tmpl.ExecuteTemplate(w, "homepage", data)
 }
 
 func (h *Handler) ShoppingItemsView(w http.ResponseWriter, r *http.Request) {
@@ -483,10 +489,12 @@ func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
 		OrderItems []models.OrderItem
 		Message    string
 		AlertType  string
+		TotalCost  float64
 	}{
 		OrderItems: cartItems,
 		Message:    cartMessage,
 		AlertType:  alertType,
+		TotalCost:  getTotalCartCost(),
 	}
 
 	tmpl.ExecuteTemplate(w, "cartItems", data)
@@ -499,10 +507,12 @@ func (h *Handler) CartView(w http.ResponseWriter, r *http.Request) {
 		OrderItems []models.OrderItem
 		Message    string
 		AlertType  string
+		TotalCost  float64
 	}{
 		OrderItems: cartItems,
 		Message:    "",
 		AlertType:  "",
+		TotalCost:  getTotalCartCost(),
 	}
 
 	tmpl.ExecuteTemplate(w, "cartItems", data)
@@ -510,17 +520,85 @@ func (h *Handler) CartView(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ShoppingCartView(w http.ResponseWriter, r *http.Request) {
 
-	/* data := struct {
-		OrderItems []models.OrderItem
-		Message    string
-		AlertType  string
-	}{
-		OrderItems: cartItems,
-		Message:    "",
-		AlertType:  "",
-	} */
-
 	tmpl.ExecuteTemplate(w, "shoppingCart", cartItems)
+}
+
+func (h *Handler) UpdateOrderItemQuantity(w http.ResponseWriter, r *http.Request) {
+	// Get product ID and action from URL parameters
+	cartMessage := ""
+	refreshCartList := false //Signals a refresh of cart items when an item is removed
+
+	productID, err := uuid.Parse(r.URL.Query().Get("product_id"))
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+	action := r.URL.Query().Get("action")
+
+	// Find the order item
+	var itemIndex int
+	for i, item := range cartItems {
+		if item.ProductID == productID {
+			itemIndex = i
+			break
+		}
+	}
+	if itemIndex == -1 {
+		http.Error(w, "Product not found in order", http.StatusNotFound)
+		return
+	}
+
+	// Update quantity based on action
+	switch action {
+	case "add":
+		cartItems[itemIndex].Quantity++
+	case "subtract":
+		cartItems[itemIndex].Quantity--
+		if cartItems[itemIndex].Quantity == 0 {
+			// Remove item if quantity is 0
+			cartItems = append(cartItems[:itemIndex], cartItems[itemIndex+1:]...)
+			refreshCartList = true
+		}
+	case "remove":
+		// Remove item regardless of quantity
+		cartItems = append(cartItems[:itemIndex], cartItems[itemIndex+1:]...)
+		refreshCartList = true
+	default:
+		/* http.Error(w, "Invalid action", http.StatusBadRequest)
+		return */
+		cartMessage = "Invalid Action"
+	}
+
+	// Respond to the request
+	//fmt.Fprintf(w, "Order item updated")
+	data := struct {
+		OrderItems       []models.OrderItem
+		Message          string
+		AlertType        string
+		TotalCost        float64
+		Action           string
+		RefreshCartItems bool
+	}{
+		OrderItems:       cartItems,
+		Message:          cartMessage,
+		AlertType:        "info",
+		TotalCost:        getTotalCartCost(),
+		Action:           action,
+		RefreshCartItems: refreshCartList,
+	}
+
+	tmpl.ExecuteTemplate(w, "updateShoppingCart", data)
+}
+
+func getTotalCartCost() float64 {
+
+	// Calculate total cost
+	totalCost := 0.0
+	for _, item := range cartItems {
+		totalCost += float64(item.Quantity) * item.Product.Price
+	}
+
+	return totalCost
 }
 
 // Order Handlers

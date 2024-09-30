@@ -1,0 +1,14 @@
+{{define "updateShoppingCart"}}
+
+    {{template "cartItems" .}}
+
+    {{if .RefreshCartItems}}
+
+        <div class="col-md-9" id="mainShoppingSection" hx-swap-oob="true">
+            {{template "shoppingCart" .OrderItems}}
+        </div>
+        
+    {{end}}
+
+
+{{end}}
