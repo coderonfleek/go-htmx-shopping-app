@@ -508,6 +508,21 @@ func (h *Handler) CartView(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "cartItems", data)
 }
 
+func (h *Handler) ShoppingCartView(w http.ResponseWriter, r *http.Request) {
+
+	/* data := struct {
+		OrderItems []models.OrderItem
+		Message    string
+		AlertType  string
+	}{
+		OrderItems: cartItems,
+		Message:    "",
+		AlertType:  "",
+	} */
+
+	tmpl.ExecuteTemplate(w, "shoppingCart", cartItems)
+}
+
 // Order Handlers
 
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
