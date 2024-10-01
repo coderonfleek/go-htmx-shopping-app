@@ -59,6 +59,42 @@ func (r *OrderRepository) PlaceOrderWithItems(orderItems []models.OrderItem) err
 	return nil
 }
 
+func (r *OrderRepository) ListOrders(limit, offset int) ([]models.Order, error) {
+	query := `SELECT order_id, user_id, order_status, order_date 
+             FROM orders ORDER BY order_date DESC LIMIT ? OFFSET ?`
+
+	rows, err := r.DB.Query(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var orders []models.Order
+	for rows.Next() {
+		var order models.Order
+		err := rows.Scan(
+			&order.OrderID,
+			&order.UserID,
+			&order.OrderStatus,
+			&order.OrderDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+	return orders, nil
+}
+
+func (r *OrderRepository) GetTotalOrdersCount() (int, error) {
+	var count int
+	err := r.DB.QueryRow("SELECT COUNT(*) FROM orders").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (r *OrderRepository) CreateOrder(order *models.Order) error {
 	query := `INSERT INTO orders (order_id, user_id, order_status, order_date) 
               VALUES (?, ?, ?, ?)`
@@ -133,6 +169,7 @@ func (r *OrderRepository) GetOrderWithProducts(orderID uuid.UUID) (*models.Order
 			return nil, err
 		}
 		item.OrderID = orderID
+		item.Cost = float64(item.Quantity) * item.Product.Price
 		item.Product.ProductID = item.ProductID
 		order.Items = append(order.Items, item)
 	}

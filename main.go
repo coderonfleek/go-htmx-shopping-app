@@ -92,8 +92,12 @@ func main() {
 	r.HandleFunc("/seed-products", handler.SeedProducts).Methods("POST")
 
 	// Order routes
-	r.HandleFunc("/orders", handler.CreateOrder).Methods("POST")
+	r.HandleFunc("/manageorders", handler.OrdersPage).Methods("GET")
+	r.HandleFunc("/allorders", handler.AllOrdersView).Methods("GET")
+	r.HandleFunc("/orders", handler.ListOrders).Methods("GET")
 	r.HandleFunc("/orders/{id}", handler.GetOrder).Methods("GET")
+
+	r.HandleFunc("/orders", handler.CreateOrder).Methods("POST")
 	r.HandleFunc("/orders/{id}/items", handler.AddOrderItem).Methods("POST")
 
 	http.ListenAndServe(":5000", r)

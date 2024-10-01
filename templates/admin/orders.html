@@ -1,0 +1,36 @@
+{{define "orders"}}
+
+{{template "adminHeader"}}
+
+{{template "adminSidemenu"}}
+
+
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Manage Orders</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item">Dashboard</li>
+                <li class="breadcrumb-item active">Orders</li>
+            </ol>
+            <div class="card mb-4">
+                <div class="card-body">
+                    This is where you can manage all orders from your customers. You can view, update and navigate between orders.
+                    <br>
+                    <div id="pageActionButton">
+                        <!-- <button hx-get="/createproduct" hx-target="#productPagesContainer" type="button" class="btn btn-success">Add Product</button> -->
+                    </div>
+                    
+
+                </div>
+            </div>
+            <div class="card mb-4" id="orderPagesContainer">
+                {{template "allOrders"}}
+                
+            </div>
+        </div>
+    </main>
+    
+
+{{template "adminFooter"}}
+
+{{end}}
