@@ -620,6 +620,7 @@ func (h *Handler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 
 	//Empty the cart items
 	cartItems = []models.OrderItem{}
+	currentCartOrderId = uuid.Nil
 
 	data := struct {
 		OrderItems []models.OrderItem
