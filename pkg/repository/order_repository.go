@@ -17,8 +17,50 @@ func NewOrderRepository(db *sql.DB) *OrderRepository {
 	return &OrderRepository{DB: db}
 }
 
+func (r *OrderRepository) PlaceOrderWithItems(orderItems []models.OrderItem) error {
+	// Begin transaction
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	order := models.Order{
+		OrderID:     uuid.New(),
+		UserID:      "fk@htmxrocks.com",
+		OrderStatus: "ordered",
+		OrderDate:   time.Now(),
+		Items:       orderItems,
+	}
+
+	// Insert order into orders table
+	_, err = tx.Exec("INSERT INTO orders (order_id, user_id, order_status, order_date) VALUES (?, ?, ?, ?)",
+		order.OrderID, order.UserID, order.OrderStatus, order.OrderDate)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Insert order items into order_items table
+	for _, item := range order.Items {
+		_, err = tx.Exec("INSERT INTO order_items (order_id, product_id, quantity, cost) VALUES (?, ?, ?, ?)",
+			order.OrderID, item.ProductID, item.Quantity, item.Cost)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *OrderRepository) CreateOrder(order *models.Order) error {
-	query := `INSERT INTO orders (order_id, session_id, order_status, order_date) 
+	query := `INSERT INTO orders (order_id, user_id, order_status, order_date) 
               VALUES (?, ?, ?, ?)`
 
 	order.OrderID = uuid.New()
@@ -26,7 +68,7 @@ func (r *OrderRepository) CreateOrder(order *models.Order) error {
 
 	_, err := r.DB.Exec(query,
 		order.OrderID,
-		order.SessionID,
+		order.UserID,
 		order.OrderStatus,
 		order.OrderDate,
 	)
@@ -47,13 +89,13 @@ func (r *OrderRepository) AddOrderItem(orderItem *models.OrderItem) error {
 
 func (r *OrderRepository) GetOrderWithProducts(orderID uuid.UUID) (*models.Order, error) {
 	// First, get the order details
-	orderQuery := `SELECT order_id, session_id, order_status, order_date 
+	orderQuery := `SELECT order_id, user_id, order_status, order_date 
                    FROM orders WHERE order_id = ?`
 
 	var order models.Order
 	err := r.DB.QueryRow(orderQuery, orderID).Scan(
 		&order.OrderID,
-		&order.SessionID,
+		&order.UserID,
 		&order.OrderStatus,
 		&order.OrderDate,
 	)

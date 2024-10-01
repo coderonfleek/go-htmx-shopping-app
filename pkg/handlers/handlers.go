@@ -601,6 +601,37 @@ func getTotalCartCost() float64 {
 	return totalCost
 }
 
+func (h *Handler) PlaceOrder(w http.ResponseWriter, r *http.Request) {
+
+	for i := range cartItems {
+		cartItems[i].Cost = float64(cartItems[i].Quantity) * cartItems[i].Product.Price
+
+	}
+
+	err := h.Repo.Order.PlaceOrderWithItems(cartItems)
+	if err != nil {
+
+		http.Error(w, "Error Placing Order "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	displayItems := cartItems
+	totalCost := getTotalCartCost()
+
+	//Empty the cart items
+	cartItems = []models.OrderItem{}
+
+	data := struct {
+		OrderItems []models.OrderItem
+		TotalCost  float64
+	}{
+		OrderItems: displayItems,
+		TotalCost:  totalCost,
+	}
+
+	tmpl.ExecuteTemplate(w, "orderComplete", data)
+}
+
 // Order Handlers
 
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -611,7 +642,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	order := models.Order{
-		SessionID:   r.FormValue("session_id"),
+		UserID:      r.FormValue("session_id"),
 		OrderStatus: r.FormValue("order_status"),
 	}
 

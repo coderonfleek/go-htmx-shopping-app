@@ -8,7 +8,7 @@ import (
 
 type Order struct {
 	OrderID     uuid.UUID
-	SessionID   string
+	UserID      string
 	OrderStatus string
 	OrderDate   time.Time
 	Items       []OrderItem

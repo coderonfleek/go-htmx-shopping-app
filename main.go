@@ -74,6 +74,7 @@ func main() {
 	r.HandleFunc("/addtocart/{product_id}", handler.AddToCart).Methods("POST")
 	r.HandleFunc("/gotocart", handler.ShoppingCartView).Methods("GET")
 	r.HandleFunc("/updateorderitem", handler.UpdateOrderItemQuantity).Methods("PUT")
+	r.HandleFunc("/ordercomplete", handler.PlaceOrder).Methods("GET")
 
 	// Product routes
 	//Admin Views and Pages

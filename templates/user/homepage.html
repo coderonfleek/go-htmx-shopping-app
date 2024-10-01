@@ -13,8 +13,20 @@
                 <!-- Products list -->
             </div>
         </div>
-        <div id="shoppingCartItems" class="col-md-3 mt-3" hx-get="/cartitems" hx-trigger="load">
-            <!-- Cart Items -->
+        <div class="col-md-3 mt-3">
+            
+            <div class="row">
+                <div id="shoppingCartItems" class="col" hx-get="/cartitems" hx-trigger="load">
+                    <!-- Cart Items -->
+                </div>
+            </div>
+            
+
+            <div class="row">
+                <div class="col" id="placeOrderButton">
+                    <!-- Order Button goes here -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
