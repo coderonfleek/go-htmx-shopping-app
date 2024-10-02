@@ -1,5 +1,3 @@
-// models/order_item.go
-
 package models
 
 import (
@@ -11,4 +9,5 @@ type OrderItem struct {
 	ProductID uuid.UUID
 	Quantity  int
 	Product   Product
+	Cost      float64
 }

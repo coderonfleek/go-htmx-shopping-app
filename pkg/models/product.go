@@ -1,5 +1,3 @@
-// models/product.go
-
 package models
 
 import (

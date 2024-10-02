@@ -2,31 +2,14 @@ package main
 
 import (
 	"database/sql"
-	"html/template"
 	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 )
 
-var tmpl *template.Template
 var db *sql.DB
-
-var Store = sessions.NewCookieStore([]byte("usermanagementsecret"))
-
-func init() {
-	tmpl, _ = template.ParseGlob("templates/*.html")
-
-	//Set up Sessions
-	Store.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   3600 * 3,
-		HttpOnly: true,
-	}
-
-}
 
 func initDB() {
 	var err error
@@ -50,10 +33,9 @@ func main() {
 	initDB()
 	defer db.Close()
 
-	// Setup Static file handling for images
-
-	fileServer := http.FileServer(http.Dir("./uploads"))
-	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads", fileServer))
+	// Setup Static folder for static files and images
+	fs := http.FileServer(http.Dir("./static"))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
 	http.ListenAndServe(":5000", r)
 }

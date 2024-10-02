@@ -59,7 +59,7 @@ func (r *ProductRepository) CreateProduct(product *models.Product) error {
 }
 
 func (r *ProductRepository) UpdateProduct(product *models.Product) error {
-	query := `UPDATE products SET product_name = ?, price = ?, description = ?, product_image = ?, date_modified = ? 
+	query := `UPDATE products SET product_name = ?, price = ?, description = ?, date_modified = ? 
               WHERE product_id = ?`
 
 	product.DateModified = time.Now()
@@ -68,7 +68,6 @@ func (r *ProductRepository) UpdateProduct(product *models.Product) error {
 		product.ProductName,
 		product.Price,
 		product.Description,
-		product.ProductImage,
 		product.DateModified,
 		product.ProductID,
 	)
@@ -83,7 +82,7 @@ func (r *ProductRepository) DeleteProduct(productID uuid.UUID) error {
 
 func (r *ProductRepository) ListProducts(limit, offset int) ([]models.Product, error) {
 	query := `SELECT product_id, product_name, price, description, product_image, date_created, date_modified 
-              FROM products LIMIT ? OFFSET ?`
+              FROM products ORDER BY date_created DESC LIMIT ? OFFSET ?`
 
 	rows, err := r.DB.Query(query, limit, offset)
 	if err != nil {
@@ -108,5 +107,49 @@ func (r *ProductRepository) ListProducts(limit, offset int) ([]models.Product, e
 		}
 		products = append(products, product)
 	}
+	return products, nil
+}
+
+func (r *ProductRepository) GetTotalProductsCount() (int, error) {
+	var count int
+	err := r.DB.QueryRow("SELECT COUNT(*) FROM products").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *ProductRepository) GetProducts(whereClause string) ([]models.Product, error) {
+	query := `
+		SELECT product_id, product_name, price, description, product_image, date_created, date_modified
+		FROM products
+	`
+
+	if whereClause != "" {
+		query += " WHERE " + whereClause
+	}
+
+	query += " ORDER BY date_created DESC"
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []models.Product
+	for rows.Next() {
+		var p models.Product
+		err := rows.Scan(&p.ProductID, &p.ProductName, &p.Price, &p.Description, &p.ProductImage, &p.DateCreated, &p.DateModified)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return products, nil
 }
