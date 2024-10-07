@@ -1,0 +1,33 @@
+{{define "viewProduct"}}
+<div class="card-header">
+    <i class="fas fa-table me-1"></i>
+    Your Product
+</div>
+
+<div class="card-body">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="static/uploads/{{.ProductImage}}" width="300" alt="{{.ProductName}}" class="img-fluid rounded">
+            </div>
+            <div class="col-md-6">
+                <h1 class="mb-4">{{.ProductName}}</h1>
+                <p class="lead mb-4">{{.Description}}</p>
+                <h2 class="mb-3">${{printf "%.2f" .Price}}</h2>
+               
+                {{if .ProductID}}
+                <a hx-get="/editproduct/{{.ProductID}}" hx-target="#productPagesContainer" class="btn btn-outline-secondary btn-lg ms-2">Edit</a>
+                {{end}} 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Out of Bound swap for Action button -->
+<div style="display: none;">
+    <div id="pageActionButton" hx-swap-oob="true">
+        <button hx-get="/allproducts" hx-target="#productPagesContainer" type="button" class="btn btn-primary">All Products</button>
+    </div>
+</div>
+
+{{end}}

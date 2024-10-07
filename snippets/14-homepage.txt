@@ -1,0 +1,36 @@
+{{define "homepage"}}
+
+{{template "header"}}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9" id="mainShoppingSection">
+            <div class="progress htmx-indicator" id="shoppingItemsIndicator">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4" hx-get="/shoppingitems" hx-trigger="load" hx-indicator="#shoppingItemsIndicator">
+                  
+                <!-- Products list -->
+            </div>
+        </div>
+        <div class="col-md-3 mt-3">
+            
+            <div class="row">
+                <div id="shoppingCartItems" class="col" hx-get="/cartitems" hx-trigger="load">
+                    <!-- Cart Items -->
+                </div>
+            </div>
+            
+
+            <div class="row">
+                <div class="col" id="placeOrderButton">
+                    <!-- Order Button goes here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer"}}
+
+{{end}}

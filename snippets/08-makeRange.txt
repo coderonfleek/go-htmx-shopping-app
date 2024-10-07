@@ -1,0 +1,7 @@
+func makeRange(min, max int) []int {
+	rangeArray := make([]int, max-min+1)
+	for i := range rangeArray {
+		rangeArray[i] = min + i
+	}
+	return rangeArray
+}

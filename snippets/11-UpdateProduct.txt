@@ -1,0 +1,59 @@
+func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	productID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Initialize error messages slice
+	var responseMessages []string
+
+	//Check for empty fields
+	ProductName := r.FormValue("product_name")
+	ProductPrice := r.FormValue("price")
+	ProductDescription := r.FormValue("description")
+
+	if ProductName == "" || ProductPrice == "" || ProductDescription == "" {
+
+		responseMessages = append(responseMessages, "All Fields Are Required")
+		sendProductMessage(w, responseMessages, nil)
+		return
+	}
+
+	price, err := strconv.ParseFloat(ProductPrice, 64)
+	if err != nil {
+		responseMessages = append(responseMessages, "Invalid Price")
+		sendProductMessage(w, responseMessages, nil)
+		return
+	}
+
+	product := models.Product{
+		ProductID:   productID,
+		ProductName: ProductName,
+		Price:       price,
+		Description: ProductDescription,
+	}
+
+	err = h.Repo.Product.UpdateProduct(&product)
+	if err != nil {
+
+		responseMessages = append(responseMessages, "Error Updating Product: "+err.Error())
+		sendProductMessage(w, responseMessages, nil)
+		return
+	}
+
+	//Get and send updated product
+	updatedProduct, _ := h.Repo.Product.GetProductByID(productID)
+
+	//Fake Latency
+	time.Sleep(2 * time.Second)
+
+	sendProductMessage(w, []string{}, updatedProduct)
+}

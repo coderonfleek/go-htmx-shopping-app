@@ -1,0 +1,16 @@
+func (h *Handler) CartView(w http.ResponseWriter, r *http.Request) {
+
+	data := struct {
+		OrderItems []models.OrderItem
+		Message    string
+		AlertType  string
+		TotalCost  float64
+	}{
+		OrderItems: cartItems,
+		Message:    "",
+		AlertType:  "",
+		TotalCost:  getTotalCartCost(),
+	}
+
+	tmpl.ExecuteTemplate(w, "cartItems", data)
+}

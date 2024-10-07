@@ -1,0 +1,10 @@
+func (h *Handler) ShoppingHomepage(w http.ResponseWriter, r *http.Request) {
+
+	data := struct {
+		OrderItems []models.OrderItem
+	}{
+		OrderItems: cartItems,
+	}
+
+	tmpl.ExecuteTemplate(w, "homepage", data)
+}

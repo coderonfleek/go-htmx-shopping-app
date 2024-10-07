@@ -1,0 +1,25 @@
+{{define "allOrders"}}
+<div class="card-header">
+    <i class="fas fa-table me-1"></i>
+    All Orders
+</div>
+<div class="card-body">
+                    
+    <table class="table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Order Status</th>
+            <th>Order Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody" hx-get="/orders" hx-trigger="load" hx-indicator="#loadingIndicator">
+            
+            
+        </tbody>
+    </table>
+</div>
+
+
+{{end}}

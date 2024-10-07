@@ -1,0 +1,9 @@
+func (h *Handler) ShoppingItemsView(w http.ResponseWriter, r *http.Request) {
+
+	//Fake Latency
+	time.Sleep(2 * time.Second)
+
+	products, _ := h.Repo.Product.GetProducts("product_image !=''")
+
+	tmpl.ExecuteTemplate(w, "shoppingItems", products)
+}

@@ -1,0 +1,49 @@
+{{define "shoppingCart"}}
+
+<div class="col-md-9 mt-3">
+    {{range .}}
+        <div class="row">
+            <div class="col">
+                <div class="card mb-4">
+                    <img src="/static/uploads/{{.Product.ProductImage}}" class="card-img-top" alt="Chelsea Shoes">
+                    <div class="card-body">
+                        <h5 class="card-title">{{.Product.ProductName}}</h5>
+                        <p class="card-text">${{.Product.Price}}</p>
+                        <p class="card-text"><small class="text-muted">{{.Product.Description}}</small></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <button hx-put="/updateorderitem?product_id={{.ProductID}}&action=add"
+                                hx-target="#shoppingCartItems" class="btn btn-primary btn-block">+</button>
+                    </div>
+                    <div class="col-md-4">&nbsp;</div>
+                    <div class="col-md-4">
+                        <button hx-put="/updateorderitem?product_id={{.ProductID}}&action=subtract"
+                        hx-target="#shoppingCartItems" class="btn btn-warning btn-block">-</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button hx-put="/updateorderitem?product_id={{.ProductID}}&action=remove"
+                        hx-target="#shoppingCartItems" class="btn btn-danger btn-block ms-2">Remove Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {{end}}
+    
+</div>
+
+<!-- Swap "Go to Cart button" -->
+    <div style="display: none;">
+        <div class="col" id="placeOrderButton" hx-swap-oob="true">
+            <a href="/ordercomplete" class="btn btn-success w-100 mt-3">Place Order</a>
+        </div>
+    </div>
+
+
+{{end}}

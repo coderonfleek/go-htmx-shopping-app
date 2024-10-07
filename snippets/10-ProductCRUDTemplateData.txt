@@ -1,0 +1,5 @@
+
+type ProductCRUDTemplateData struct {
+	Messages []string
+	Product  *models.Product
+}

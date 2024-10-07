@@ -1,0 +1,60 @@
+{{define "orderComplete"}}
+
+{{template "header"}}
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle check-icon mb-4"></i>
+                        <h2 class="card-title">Order Complete!</h2>
+                        <p class="card-text">Thank you for your purchase. Your order has been successfully processed.</p>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>Order Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .OrderItems}}
+                                    <tr>
+                                        <td>{{.Product.ProductName}}</td>
+                                        <td>{{.Quantity}}</td>
+                                        <td>${{.Product.Price}}</td>
+                                        <td>${{.Cost}}</td>
+                                    </tr>
+                                {{end}}
+                                
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-right">Total:</th>
+                                    <th>${{.TotalCost}}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/" class="btn btn-primary">Return Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{template "footer"}}
+
+{{end}}

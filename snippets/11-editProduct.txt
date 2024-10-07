@@ -1,0 +1,37 @@
+{{define "editProduct"}}
+<div class="card-header">
+    <i class="fa-solid fa-circle-plus me-1"></i>
+    Edit Product
+</div>
+
+<div class="card-body">
+
+    <form id="editProfileForm" novalidate>
+        <div id="errors"></div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Enter Product Name" value="{{.ProductName}}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="bio" class="form-label">Price</label>
+            <input type="text" class="form-control" id="price" name="price" required placeholder="Enter Product Price" value="{{.Price}}">
+        </div>
+        <div class="mb-3">
+            <label for="bio" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" placeholder="Product Description">{{.Description}}</textarea>
+        </div>
+        
+        <button hx-put="/products/{{.ProductID}}" 
+                hx-target="#errors" 
+                hx-indicator="#loadingIndicator" type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+
+</div>
+
+<!-- Out of Bound swap for Action button -->
+<div id="pageActionButton" hx-swap-oob="true">
+    <button hx-get="/allproducts" hx-target="#productPagesContainer" type="button" class="btn btn-primary">All Products</button>
+</div>
+
+{{end}}

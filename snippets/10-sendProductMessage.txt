@@ -1,0 +1,4 @@
+func sendProductMessage(w http.ResponseWriter, messages []string, product *models.Product) {
+	data := ProductCRUDTemplateData{Messages: messages, Product: product}
+	tmpl.ExecuteTemplate(w, "messages", data)
+}

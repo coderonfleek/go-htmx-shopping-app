@@ -1,0 +1,57 @@
+func (h *Handler) ListProducts(w http.ResponseWriter, r *http.Request) {
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 10 // Default limit
+	}
+
+	offset := (page - 1) * limit
+
+	products, err := h.Repo.Product.ListProducts(limit, offset)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalProducts, err := h.Repo.Product.GetTotalProductsCount()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalProducts) / float64(limit)))
+	previousPage := page - 1
+	nextPage := page + 1
+	pageButtonsRange := makeRange(1, totalPages)
+
+	data := struct {
+		Products         []models.Product
+		CurrentPage      int
+		TotalPages       int
+		Limit            int
+		PreviousPage     int
+		NextPage         int
+		PageButtonsRange []int
+	}{
+		Products:         products,
+		CurrentPage:      page,
+		TotalPages:       totalPages,
+		Limit:            limit,
+		PreviousPage:     previousPage,
+		NextPage:         nextPage,
+		PageButtonsRange: pageButtonsRange,
+	}
+
+	//Fake Latency
+	//time.Sleep(5 * time.Second)
+
+	tmpl.ExecuteTemplate(w, "productRows", data)
+
+}

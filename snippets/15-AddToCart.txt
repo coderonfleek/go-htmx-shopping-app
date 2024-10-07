@@ -1,0 +1,65 @@
+func (h *Handler) AddToCart(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	productID, err := uuid.Parse(vars["product_id"])
+	if err != nil {
+		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	// Generate a new order id for the session if one does not exist
+	if currentCartOrderId == uuid.Nil {
+		currentCartOrderId = uuid.New()
+	}
+
+	// Check if product already exists in order items
+	exists := false
+	for _, item := range cartItems {
+		if item.ProductID == productID {
+			exists = true
+			break
+		}
+	}
+
+	//Get the Product
+	product, _ := h.Repo.Product.GetProductByID(productID)
+
+	cartMessage := ""
+	alertType := ""
+
+	if !exists {
+
+		// Create a new order item
+		newOrderItem := models.OrderItem{
+			OrderID:   currentCartOrderId,
+			ProductID: productID,
+			Quantity:  1, // Initial quantity of 1
+			Product:   *product,
+		}
+
+		// Add new order item to the array
+		cartItems = append(cartItems, newOrderItem)
+
+		cartMessage = product.ProductName + " successfully added"
+		alertType = "success"
+	} else {
+
+		cartMessage = product.ProductName + " already exists in cart"
+		alertType = "danger"
+	}
+
+	data := struct {
+		OrderItems []models.OrderItem
+		Message    string
+		AlertType  string
+		TotalCost  float64
+	}{
+		OrderItems: cartItems,
+		Message:    cartMessage,
+		AlertType:  alertType,
+		TotalCost:  getTotalCartCost(),
+	}
+
+	tmpl.ExecuteTemplate(w, "cartItems", data)
+
+}

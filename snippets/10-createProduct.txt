@@ -1,0 +1,42 @@
+{{define "createProduct"}}
+<div class="card-header">
+    <i class="fa-solid fa-circle-plus me-1"></i>
+    Add New Product
+</div>
+
+<div class="card-body">
+
+    <form id="editProfileForm" novalidate>
+        <div id="errors"></div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="product_name" name="product_name" required placeholder="Enter Product Name">
+        </div>
+        
+        <div class="mb-3">
+            <label for="bio" class="form-label">Price</label>
+            <input type="text" class="form-control" id="price" name="price" required placeholder="Enter Product Price">
+        </div>
+        <div class="mb-3">
+            <label for="bio" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" placeholder="Product Description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="avatarInput" class="form-label">Select Product Image</label>
+            <input type="file" class="form-control" id="product_image" name="product_image" required>
+        </div>
+        
+        <button hx-post="/products" 
+                hx-encoding="multipart/form-data" 
+                hx-target="#errors" 
+                hx-indicator="#loadingIndicator" type="submit" class="btn btn-primary">Create Product</button>
+    </form>
+
+</div>
+
+<!-- Out of Bound swap for Action button -->
+<div id="pageActionButton" hx-swap-oob="true">
+    <button hx-get="/allproducts" hx-target="#productPagesContainer" type="button" class="btn btn-primary">All Products</button>
+</div>
+
+{{end}}

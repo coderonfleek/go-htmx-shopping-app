@@ -1,0 +1,10 @@
+func getTotalCartCost() float64 {
+
+	// Calculate total cost
+	totalCost := 0.0
+	for _, item := range cartItems {
+		totalCost += float64(item.Quantity) * item.Product.Price
+	}
+
+	return totalCost
+}

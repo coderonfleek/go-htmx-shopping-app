@@ -1,0 +1,18 @@
+{{define "messages"}}
+
+{{$count := len .Messages}}
+{{if gt $count 0}}
+<ul>
+    {{range .Messages}}
+        <li>{{ . }}</li>
+    {{end}}
+</ul>
+{{else}}
+
+<div class="card mb-4" id="productPagesContainer" hx-swap-oob="true">
+    {{template "viewProduct" .Product}}
+</div>
+{{end}}
+
+
+{{end}}
